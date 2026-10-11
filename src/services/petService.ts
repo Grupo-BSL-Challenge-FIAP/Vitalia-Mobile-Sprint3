@@ -5,7 +5,7 @@ export interface PetRequest {
   sex: string;
   birthDate: string;
   weightKg: number;
-  status: "NORMAL" | "ATTENTION" | "CRITICAL";
+  status: "NORMAL" | "ATTENTION" | "RISK";
   breedId: number | null;
 }
 
@@ -15,7 +15,7 @@ export interface PetResponse {
   sex: string;
   birthDate: string;
   weightKg: number;
-  status: "NORMAL" | "ATTENTION" | "CRITICAL";
+  status: "NORMAL" | "ATTENTION" | "RISK";
   ownerUserId: number;
   breedId: number | null;
   breedName: string | null;

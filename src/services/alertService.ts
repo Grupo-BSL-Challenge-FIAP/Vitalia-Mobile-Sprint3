@@ -2,10 +2,12 @@ import { api } from "../api/api";
 
 export interface AlertResponse {
   id: number;
-  type?: string | null;
+  alertType?: string | null;
   message?: string | null;
-  severity?: string | null;
+  severity?: "LOW" | "MEDIUM" | "HIGH" | null;
+  status?: string | null;
   createdAt?: string | null;
+  resolvedAt?: string | null;
   petId?: number | null;
 }
 

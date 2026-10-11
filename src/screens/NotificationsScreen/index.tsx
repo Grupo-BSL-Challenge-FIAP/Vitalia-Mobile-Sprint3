@@ -12,9 +12,9 @@ type NotificationCardProps = {
 
 function NotificationCard({ alert }: NotificationCardProps) {
   const getAlertStyle = () => {
-    const severity = alert.severity?.toUpperCase();
+    const severity = alert.severity;
 
-    if (severity === "CRITICAL") {
+    if (severity === "HIGH") {
       return {
         icon: "alert-circle-outline" as const,
         iconColor: COLORS.red[600],
@@ -22,7 +22,7 @@ function NotificationCard({ alert }: NotificationCardProps) {
       };
     }
 
-    if (severity === "WARNING" || severity === "ATTENTION") {
+    if (severity === "MEDIUM") {
       return {
         icon: "alert-outline" as const,
         iconColor: COLORS.orange[900],
@@ -39,7 +39,7 @@ function NotificationCard({ alert }: NotificationCardProps) {
 
   const alertStyle = getAlertStyle();
 
-  const title = alert.type || "Alerta Vitalia";
+  const title = alert.alertType || "Alerta Vitalia";
 
   const description =
     alert.message || "Um novo alerta foi identificado para o seu pet.";
