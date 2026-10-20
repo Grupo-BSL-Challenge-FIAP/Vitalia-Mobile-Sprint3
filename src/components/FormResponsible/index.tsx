@@ -183,7 +183,7 @@ export default function FormResponsible() {
       return false;
     }
 
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(email.trim())) {
       newErrors.email = true;
       setErrors(newErrors);
       setMessageError("Formato de e-mail inválido. Exemplo: example@gmail.com");
@@ -225,13 +225,15 @@ export default function FormResponsible() {
 
   const saveDataResponsibleData = async () => {
     try {
+      const emailTrim = email.trim().toLowerCase();
+
       const responsibleData = {
         name,
         birthDate,
         cpf,
         phone,
         address,
-        email,
+        email: emailTrim,
         password,
       };
 
@@ -239,10 +241,6 @@ export default function FormResponsible() {
         "@petguardian:responsibleData", 
         JSON.stringify(responsibleData)
       );
-
-      const saveResponsible = await AsyncStorage.getItem("@petguardian:responsibleData");
-      console.log("Dados do responsável salvos:", JSON.parse(saveResponsible || "{}"));
-
     } catch (error) {
       setMessageError("Ocorreu um erro ao salvar os dados. Tente novamente.");
     }
