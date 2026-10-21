@@ -1,11 +1,10 @@
 import { View } from "react-native";
 import InputForm from "../InputForm";
 import ContainerTitleSubTitle from "../ContainerTitleSubTitle";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { COLORS, FONTS } from "../../styles/styles";
 import ContainerForm from "../ContainerForm";
-import ButtonLink from "../ButtonLink";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import TextLink from "../TextLink";
 import ButtonFormLink from "../ButtonFormLink";
