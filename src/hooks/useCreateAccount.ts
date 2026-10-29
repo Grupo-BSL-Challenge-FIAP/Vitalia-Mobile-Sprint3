@@ -21,6 +21,7 @@ interface CreateAccountData {
     gender: string;
     birthDate: string;
     weight: string;
+    breedId: number;
   };
 }
 
@@ -36,7 +37,6 @@ export function useCreateAccount() {
       responsible,
       pet,
     }: CreateAccountData) => {
-
       await authService.register({
         fullName: responsible.name,
         email: responsible.email,
@@ -44,7 +44,7 @@ export function useCreateAccount() {
         phoneNumber: responsible.phone,
         cpf: responsible.cpf,
         dateOfBirth: convertDateToApi(
-          responsible.birthDate
+          responsible.birthDate,
         ),
         address: responsible.address,
       });
@@ -58,23 +58,28 @@ export function useCreateAccount() {
         name: pet.name,
         sex: pet.gender,
         birthDate: convertDateToApi(
-          pet.birthDate
+          pet.birthDate,
         ),
         weightKg: Number(pet.weight),
         status: "NORMAL",
-        breedId: null,
+        breedId: pet.breedId,
       });
+
+      await AsyncStorage.setItem(
+        "@petguardian:activePetId",
+        String(createdPet.id),
+      );
 
       return createdPet;
     },
 
     onSuccess: async () => {
       await AsyncStorage.removeItem(
-        "@petguardian:responsibleData"
+        "@petguardian:responsibleData",
       );
 
       await AsyncStorage.removeItem(
-        "@petguardian:petsData"
+        "@petguardian:petsData",
       );
 
       await queryClient.invalidateQueries({

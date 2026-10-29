@@ -58,6 +58,11 @@ export default function AppNavigator() {
 
   return (
     <Stack.Navigator
+      initialRouteName={
+        isAuthenticated
+          ? "TabsDashboardResponsible"
+          : "HomeLoginCadastroScreen"
+      }
       screenOptions={{
         headerShown: false,
       }}
