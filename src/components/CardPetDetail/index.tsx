@@ -1,10 +1,8 @@
 import { Image, Text, View } from "react-native";
-
 import CardPet from "../CardPet";
-
 import { COLORS, FONTS } from "../../styles/styles";
-
 import { PetResponse } from "../../services/petService";
+import { useImages } from "../../contexts/ImageContext";
 
 interface CardPetDetailProps {
   pet: PetResponse;
@@ -13,6 +11,8 @@ interface CardPetDetailProps {
 export default function CardPetDetail({
   pet,
 }: CardPetDetailProps) {
+  const { getPetImage } = useImages();
+
   const getPetAgeLabel = (
     birthDate?: string,
   ) => {
@@ -72,7 +72,10 @@ export default function CardPetDetail({
     >
       <View>
         <Image
-          source={require("../../assets/dogPaws.png")}
+          source={getPetImage(
+            pet.speciesId,
+            pet.sex,
+          )}
           style={{
             width: 84,
             height: 84,
