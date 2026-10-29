@@ -2,6 +2,7 @@ import { Image, Text, View } from "react-native";
 
 import { COLORS, FONTS } from "../../styles/styles";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
+import { useImages } from "../../contexts/ImageContext";
 
 export default function HeaderDashboardResponsible() {
   const {
@@ -9,6 +10,8 @@ export default function HeaderDashboardResponsible() {
     isLoading,
     isError,
   } = useCurrentUser();
+
+  const { getUserImage } = useImages();
 
   const userName = isLoading
     ? "..."
@@ -38,7 +41,7 @@ export default function HeaderDashboardResponsible() {
         }}
       >
         <Image
-          source={require("../../assets/dogPaws.png")}
+          source={getUserImage()}
           style={{
             width: 50,
             height: 50,
