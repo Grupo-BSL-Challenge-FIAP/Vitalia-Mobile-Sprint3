@@ -1,4 +1,4 @@
-import { Alert, Modal, Text, TextInput, TouchableOpacity, View, } from "react-native";
+import { Alert, Image, Modal, Text, TextInput, TouchableOpacity, View, } from "react-native";
 import { useEffect, useState } from "react";
 import { AntDesign } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
@@ -7,6 +7,8 @@ import { PetResponse } from "../../services/petService";
 import { useUpdatePet } from "../../hooks/useUpdatePet";
 import { useSpecies } from "../../hooks/useSpecies";
 import { useBreeds } from "../../hooks/useBreeds";
+import { useImages } from "../../contexts/ImageContext";
+import * as ImagePicker from "expo-image-picker";
 
 interface EditPetModalProps {
   visible: boolean;
@@ -20,6 +22,7 @@ export default function EditPetModal({
   onClose,
 }: EditPetModalProps) {
   const updatePetMutation = useUpdatePet();
+  const { getPetImage } = useImages();
 
   const {
     data: speciesList = [],
@@ -44,6 +47,9 @@ export default function EditPetModal({
 
   const [weight, setWeight] =
     useState("");
+
+  const [selectedImage, setSelectedImage] =
+    useState<string | null>(null);
 
   const {
     data: breedList = [],
@@ -72,6 +78,22 @@ export default function EditPetModal({
     return `${year}-${month}-${day}`;
   };
 
+  const handlePickImage = async () => {
+    const result =
+      await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+    if (!result.canceled) {
+      setSelectedImage(
+        result.assets[0].uri,
+      );
+    }
+  };
+
   useEffect(() => {
     if (visible) {
       setName(pet.name);
@@ -94,6 +116,8 @@ export default function EditPetModal({
       setWeight(
         String(pet.weightKg),
       );
+
+      setSelectedImage(null);
     }
   }, [visible, pet]);
 
@@ -263,6 +287,60 @@ export default function EditPetModal({
                 color="black"
               />
             </TouchableOpacity>
+          </View>
+
+          {/* FOTO */}
+
+          <View
+            style={{
+              alignItems: "center",
+              marginBottom: 30,
+            }}
+          >
+            <View>
+              <Image
+                source={
+                  selectedImage
+                    ? { uri: selectedImage }
+                    : getPetImage(
+                        pet.speciesId,
+                        pet.sex,
+                      )
+                }
+                style={{
+                  width: 120,
+                  height: 120,
+                  borderRadius: 100,
+                  borderWidth: 2,
+                  borderColor:
+                    COLORS.orange[900],
+                }}
+              />
+
+              <TouchableOpacity
+                onPress={handlePickImage}
+                style={{
+                  position: "absolute",
+                  bottom: 0,
+                  right: 5,
+                  width: 38,
+                  height: 38,
+                  borderRadius: 20,
+                  backgroundColor:
+                    COLORS.orange[900],
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <AntDesign
+                  name="edit"
+                  size={20}
+                  color={
+                    COLORS.white[100]
+                  }
+                />
+              </TouchableOpacity>
+            </View>
           </View>
 
           {/* NOME */}
