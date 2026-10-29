@@ -7,6 +7,7 @@ import Entypo from "@expo/vector-icons/Entypo";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useMyPets } from "../../hooks/useMyPets";
+import { useImages } from "../../contexts/ImageContext";
 
 export default function YourPets() {
   const {
@@ -14,6 +15,8 @@ export default function YourPets() {
     isLoading,
     isError,
   } = useMyPets();
+
+  const { getPetImage } = useImages();
 
   const [petActive, setPetActive] =
     useState<number | null>(null);
@@ -70,6 +73,22 @@ export default function YourPets() {
     }
 
     return `Idoso • ${years} anos`;
+  };
+
+  const getSpeciesIdFromPet = (pet: any) => {
+    if (
+      typeof pet?.speciesId === "number"
+    ) {
+      return pet.speciesId;
+    }
+
+    if (
+      typeof pet?.breed?.speciesId === "number"
+    ) {
+      return pet.breed.speciesId;
+    }
+
+    return null;
   };
 
   useEffect(() => {
@@ -206,7 +225,10 @@ export default function YourPets() {
                 }
               >
                 <Image
-                  source={require("../../assets/dogPaws.png")}
+                  source={getPetImage(
+                    getSpeciesIdFromPet(pet),
+                    pet.sex,
+                  )}
                   style={{
                     width: 60,
                     height: 60,
@@ -227,7 +249,12 @@ export default function YourPets() {
             <CardPet>
               <View>
                 <Image
-                  source={require("../../assets/dogPaws.png")}
+                  source={getPetImage(
+                    getSpeciesIdFromPet(
+                      activePet,
+                    ),
+                    activePet.sex,
+                  )}
                   style={{
                     width: 84,
                     height: 84,
