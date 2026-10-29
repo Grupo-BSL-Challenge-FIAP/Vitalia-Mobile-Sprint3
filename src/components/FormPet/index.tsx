@@ -1,4 +1,4 @@
-import { ActivityIndicator, Alert, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import ContainerTitleSubTitle from "../ContainerTitleSubTitle";
 import ContainerForm from "../ContainerForm";
 import InputForm from "../InputForm";
@@ -13,27 +13,34 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../navigation/AppNavigator";
 import { useAuth } from "../../contexts/AuthContext";
-import { useSpecies } from "../../hooks/useSpecies";
-import { useBreeds } from "../../hooks/useBreeds";
 import { useCreatePet } from "../../hooks/useCreatePet";
+import { PET_SPECIES } from "../../data/petCatalog";
 
 export default function FormPet() {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
   const { isAuthenticated } = useAuth();
+
   const createPetMutation = useCreatePet();
-  const { data: speciesList = [], isLoading: isLoadingSpecies } = useSpecies();
+
+  const speciesList = PET_SPECIES;
+
   const [selectedSpeciesId, setSelectedSpeciesId] = useState<number | null>(
     null,
   );
-  const { data: breedList = [], isLoading: isLoadingBreeds } =
-    useBreeds(selectedSpeciesId);
+
   const [selectedBreedId, setSelectedBreedId] = useState<number | null>(null);
+
+  const breedList =
+    speciesList.find((species) => species.id === selectedSpeciesId)?.breeds ?? [];
+
   const [name, setName] = useState("");
   const [gender, setGender] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [weight, setWeight] = useState("");
   const [messageError, setMessageError] = useState("");
+
   const [errors, setErrors] = useState({
     name: false,
     species: false,
@@ -98,48 +105,68 @@ export default function FormPet() {
     const day = Number(birthDateParts[0]);
     const month = Number(birthDateParts[1]);
     const year = Number(birthDateParts[2]);
+
     const parsedBirthDate = new Date(year, month - 1, day);
+
     const today = new Date();
 
     if (!name.trim()) {
       newErrors.name = true;
+
       setErrors(newErrors);
+
       setMessageError("O nome do pet é obrigatório.");
+
       return false;
     }
 
     if (name.trim().length < 2 || name.trim().length > 50) {
       newErrors.name = true;
+
       setErrors(newErrors);
+
       setMessageError("O nome do pet deve ter entre 2 e 50 caracteres.");
+
       return false;
     }
 
     if (!selectedSpeciesId) {
       newErrors.species = true;
+
       setErrors(newErrors);
+
       setMessageError("A espécie é obrigatória.");
+
       return false;
     }
 
     if (!selectedBreedId) {
       newErrors.breed = true;
+
       setErrors(newErrors);
+
       setMessageError("A raça é obrigatória.");
+
       return false;
     }
 
     if (!gender.trim()) {
       newErrors.gender = true;
+
       setErrors(newErrors);
+
       setMessageError("O sexo biológico é obrigatório.");
+
       return false;
     }
 
     if (!birthDate.trim()) {
       newErrors.birthDate = true;
+
       setErrors(newErrors);
+
       setMessageError("A data de nascimento é obrigatória.");
+
       return false;
     }
 
@@ -151,30 +178,42 @@ export default function FormPet() {
       parsedBirthDate >= today
     ) {
       newErrors.birthDate = true;
+
       setErrors(newErrors);
+
       setMessageError(
         "A data de nascimento deve ser válida e estar no passado.",
       );
+
       return false;
     }
 
     if (!weight.trim()) {
       newErrors.weight = true;
+
       setErrors(newErrors);
+
       setMessageError("O peso é obrigatório.");
+
       return false;
     }
 
     const parsedWeight = Number(weight);
+
     if (parsedWeight <= 0 || Number.isNaN(parsedWeight)) {
       newErrors.weight = true;
+
       setErrors(newErrors);
+
       setMessageError("O peso deve ser um valor positivo.");
+
       return false;
     }
 
     setErrors(newErrors);
+
     setMessageError("");
+
     return true;
   };
 
@@ -190,13 +229,17 @@ export default function FormPet() {
     const petData = {
       id: Date.now(),
       name: name.trim(),
+
       species: selectedSpecies?.name ?? "",
       speciesId: selectedSpeciesId,
+
       breed: selectedBreed?.name ?? "",
       breedId: selectedBreedId,
+
       gender: gender.trim(),
       birthDate,
       weight,
+
       image: "dogPaws",
     };
 
@@ -205,7 +248,10 @@ export default function FormPet() {
       JSON.stringify([petData]),
     );
 
-    await AsyncStorage.setItem("@petguardian:activePetId", String(petData.id));
+    await AsyncStorage.setItem(
+      "@petguardian:activePetId",
+      String(petData.id),
+    );
 
     console.log("Pet temporário salvo:", petData);
   };
@@ -237,7 +283,9 @@ export default function FormPet() {
         onError: (error) => {
           console.error("Erro ao cadastrar pet:", error);
 
-          setMessageError("Não foi possível cadastrar o pet. Tente novamente.");
+          setMessageError(
+            "Não foi possível cadastrar o pet. Tente novamente.",
+          );
         },
       },
     );
@@ -265,9 +313,14 @@ export default function FormPet() {
 
       navigation.navigate("AccountCreationConfirmationScreen");
     } catch (error) {
-      console.error("Erro ao salvar dados temporários do pet:", error);
+      console.error(
+        "Erro ao salvar dados temporários do pet:",
+        error,
+      );
 
-      setMessageError("Ocorreu um erro ao salvar os dados. Tente novamente.");
+      setMessageError(
+        "Ocorreu um erro ao salvar os dados. Tente novamente.",
+      );
     }
   };
 
@@ -339,36 +392,32 @@ export default function FormPet() {
               overflow: "hidden",
             }}
           >
-            {isLoadingSpecies ? (
-              <ActivityIndicator color={COLORS.orange[900]} />
-            ) : (
-              <Picker
-                selectedValue={selectedSpeciesId}
-                onValueChange={handleSpeciesChange}
-                dropdownIconColor={COLORS.orange[900]}
-                style={{
-                  height: 60,
-                  color: COLORS.orange[900],
-                  fontFamily: FONTS.inter[400],
-                  fontSize: 18,
-                }}
-              >
-                <Picker.Item
-                  label="Selecione a espécie"
-                  value={null}
-                  color={COLORS.gray[100]}
-                />
+            <Picker
+              selectedValue={selectedSpeciesId}
+              onValueChange={handleSpeciesChange}
+              dropdownIconColor={COLORS.orange[900]}
+              style={{
+                height: 60,
+                color: COLORS.orange[900],
+                fontFamily: FONTS.inter[400],
+                fontSize: 18,
+              }}
+            >
+              <Picker.Item
+                label="Selecione a espécie"
+                value={null}
+                color={COLORS.gray[100]}
+              />
 
-                {speciesList.map((species) => (
-                  <Picker.Item
-                    key={species.id}
-                    label={species.name}
-                    value={species.id}
-                    color={COLORS.orange[900]}
-                  />
-                ))}
-              </Picker>
-            )}
+              {speciesList.map((species) => (
+                <Picker.Item
+                  key={species.id}
+                  label={species.name}
+                  value={species.id}
+                  color={COLORS.orange[900]}
+                />
+              ))}
+            </Picker>
           </View>
         </View>
 
@@ -395,7 +444,9 @@ export default function FormPet() {
               height: 60,
               justifyContent: "center",
               borderWidth: 2,
-              borderColor: errors.breed ? COLORS.red[500] : COLORS.orange[900],
+              borderColor: errors.breed
+                ? COLORS.red[500]
+                : COLORS.orange[900],
               borderRadius: 20,
               backgroundColor: COLORS.white[100],
               overflow: "hidden",
@@ -404,7 +455,7 @@ export default function FormPet() {
           >
             <Picker
               selectedValue={selectedBreedId}
-              enabled={selectedSpeciesId !== null && !isLoadingBreeds}
+              enabled={selectedSpeciesId !== null}
               dropdownIconColor={COLORS.orange[900]}
               style={{
                 height: 60,
@@ -427,9 +478,7 @@ export default function FormPet() {
                 label={
                   !selectedSpeciesId
                     ? "Selecione primeiro a espécie"
-                    : isLoadingBreeds
-                      ? "Carregando..."
-                      : "Selecione a raça"
+                    : "Selecione a raça"
                 }
                 value={null}
                 color={COLORS.gray[100]}
@@ -446,6 +495,8 @@ export default function FormPet() {
             </Picker>
           </View>
         </View>
+
+        {/* SEXO BIOLÓGICO */}
 
         <View
           style={{
@@ -468,7 +519,9 @@ export default function FormPet() {
               height: 60,
               justifyContent: "center",
               borderWidth: 2,
-              borderColor: errors.gender ? COLORS.red[500] : COLORS.orange[900],
+              borderColor: errors.gender
+                ? COLORS.red[500]
+                : COLORS.orange[900],
               borderRadius: 20,
               backgroundColor: COLORS.white[100],
               overflow: "hidden",
