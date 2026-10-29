@@ -15,6 +15,8 @@ import { AntDesign } from "@expo/vector-icons";
 import { COLORS, FONTS } from "../../styles/styles";
 import { MeResponse } from "../../services/authService";
 import { useUpdateCurrentUser } from "../../hooks/useUpdateCurrentUser";
+import { useImages } from "../../contexts/ImageContext";
+import * as ImagePicker from "expo-image-picker";
 
 interface EditUserModalProps {
   visible: boolean;
@@ -28,11 +30,13 @@ export default function EditUserModal({
   onClose,
 }: EditUserModalProps) {
   const updateUserMutation = useUpdateCurrentUser();
+  const { getUserImage } = useImages();
   const [fullName, setFullName] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [cpf, setCpf] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const formatDateToMobile = (date?: string | null) => {
     if (!date) {
@@ -85,6 +89,19 @@ export default function EditUserModal({
     setDateOfBirth(numbers);
   };
 
+  const handlePickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      setSelectedImage(result.assets[0].uri);
+    }
+  };
+
   useEffect(() => {
     if (!visible) {
       return;
@@ -95,6 +112,7 @@ export default function EditUserModal({
     setCpf(formatCpf(user.cpf ?? ""));
     setPhoneNumber(formatPhone(user.phoneNumber ?? ""));
     setAddress(user.address ?? "");
+    setSelectedImage(null);
   }, [visible, user]);
 
   const handleSave = () => {
@@ -224,7 +242,9 @@ export default function EditUserModal({
               >
                 <View>
                   <Image
-                    source={require("../../assets/dogPaws.png")}
+                    source={
+                      selectedImage ? { uri: selectedImage } : getUserImage()
+                    }
                     style={{
                       width: 135,
                       height: 135,
@@ -234,7 +254,8 @@ export default function EditUserModal({
                     }}
                   />
 
-                  <View
+                  <TouchableOpacity
+                    onPress={handlePickImage}
                     style={{
                       position: "absolute",
                       bottom: 0,
@@ -252,7 +273,7 @@ export default function EditUserModal({
                       size={20}
                       color={COLORS.white[100]}
                     />
-                  </View>
+                  </TouchableOpacity>
                 </View>
               </View>
 
