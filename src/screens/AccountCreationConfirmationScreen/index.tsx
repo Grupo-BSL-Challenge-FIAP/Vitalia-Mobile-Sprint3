@@ -32,7 +32,9 @@ export default function AccountCreationConfirmationScreen() {
     id: 0,
     name: "",
     species: "",
+    speciesId: null,
     breed: "",
+    breedId: null,
     gender: "",
     birthDate: "",
     weight: "",
@@ -109,6 +111,8 @@ export default function AccountCreationConfirmationScreen() {
 
     if (
       !pet.name ||
+      !pet.speciesId ||
+      !pet.breedId ||
       !pet.gender ||
       !pet.birthDate ||
       !pet.weight
@@ -138,6 +142,7 @@ export default function AccountCreationConfirmationScreen() {
           gender: pet.gender,
           birthDate: pet.birthDate,
           weight: pet.weight,
+          breedId: pet.breedId,
         },
       },
       {
