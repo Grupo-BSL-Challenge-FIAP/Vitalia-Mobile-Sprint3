@@ -1,10 +1,4 @@
-import {
-  ActivityIndicator,
-  Image,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ActivityIndicator, Image, Text, TouchableOpacity, View,} from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { COLORS, FONTS } from "../../styles/styles";
 import TitleOrange from "../TitleOrange";
@@ -12,10 +6,12 @@ import SubTitleOrange from "../SubTitleOrange";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
 import { useState } from "react";
 import EditUserModal from "../EditUserModal";
+import { useImages } from "../../contexts/ImageContext";
 
 export default function CardProfileUser() {
   const { data: user, isLoading, isError } = useCurrentUser();
   const [editModalVisible, setEditModalVisible] = useState(false);
+  const { getUserImage } = useImages();
 
   const formatCpf = (cpf?: string | null) => {
     if (!cpf) {
@@ -98,7 +94,7 @@ export default function CardProfileUser() {
       >
         <View>
           <Image
-            source={require("../../assets/dogPaws.png")}
+            source={getUserImage()}
             style={{
               width: 80,
               height: 80,
