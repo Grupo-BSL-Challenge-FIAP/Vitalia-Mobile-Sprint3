@@ -17,7 +17,5 @@ export const PET_IMAGES = {
 };
 
 export const USER_IMAGES = {
-  male: require("../assets/user-male.png"),
-
-  female: require("../assets/user-female.png"),
+  default: require("../assets/default-user.png"),
 };
