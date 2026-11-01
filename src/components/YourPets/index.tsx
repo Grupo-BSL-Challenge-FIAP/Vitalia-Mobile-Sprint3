@@ -226,8 +226,10 @@ export default function YourPets() {
               >
                 <Image
                   source={getPetImage(
-                    getSpeciesIdFromPet(pet),
+                    pet.speciesId,
                     pet.sex,
+                    undefined,
+                    pet.id,
                   )}
                   style={{
                     width: 60,
@@ -254,6 +256,8 @@ export default function YourPets() {
                       activePet,
                     ),
                     activePet.sex,
+                    undefined,
+                    activePet.id,
                   )}
                   style={{
                     width: 84,
@@ -329,7 +333,8 @@ export default function YourPets() {
                           COLORS.orange[100],
                       }}
                     >
-                      {activePet.breedName ?? "Não informada"}
+                      {activePet.breedName ??
+                        "Não informada"}
                     </Text>
                   </View>
 
