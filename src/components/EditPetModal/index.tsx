@@ -9,6 +9,7 @@ import { useSpecies } from "../../hooks/useSpecies";
 import { useBreeds } from "../../hooks/useBreeds";
 import { useImages } from "../../contexts/ImageContext";
 import * as ImagePicker from "expo-image-picker";
+import { uploadImageToCloudinary } from "../../services/cloudinaryService";
 
 interface EditPetModalProps {
   visible: boolean;
@@ -22,7 +23,7 @@ export default function EditPetModal({
   onClose,
 }: EditPetModalProps) {
   const updatePetMutation = useUpdatePet();
-  const { getPetImage } = useImages();
+  const { getPetImage, savePetImage } = useImages();
 
   const {
     data: speciesList = [],
@@ -133,7 +134,7 @@ export default function EditPetModal({
     setSelectedBreedId(null);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (
       !name.trim() ||
       !sex.trim() ||
@@ -177,6 +178,32 @@ export default function EditPetModal({
       Alert.alert(
         "Peso inválido",
         "Informe um peso válido.",
+      );
+
+      return;
+    }
+
+    try {
+      if (selectedImage) {
+        const imageUrl =
+          await uploadImageToCloudinary(
+            selectedImage,
+          );
+
+        await savePetImage(
+          pet.id,
+          imageUrl,
+        );
+      }
+    } catch (error) {
+      console.error(
+        "Erro ao enviar imagem do pet para o Cloudinary:",
+        error,
+      );
+
+      Alert.alert(
+        "Erro",
+        "Não foi possível enviar a imagem do pet.",
       );
 
       return;
@@ -305,6 +332,8 @@ export default function EditPetModal({
                     : getPetImage(
                         pet.speciesId,
                         pet.sex,
+                        undefined,
+                        pet.id,
                       )
                 }
                 style={{
