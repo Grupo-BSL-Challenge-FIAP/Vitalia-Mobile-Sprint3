@@ -47,8 +47,10 @@ export default function CardHeartbeatPet({ pet, onPress,}: CardHeartbeatPetType)
         >
           <Image
             source={getPetImage(
-              getSpeciesIdFromPet(),
+              pet.speciesId,
               pet.sex,
+              undefined,
+              pet.id,
             )}
             style={{
               width: 70,
