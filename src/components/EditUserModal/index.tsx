@@ -17,6 +17,7 @@ import { MeResponse } from "../../services/authService";
 import { useUpdateCurrentUser } from "../../hooks/useUpdateCurrentUser";
 import { useImages } from "../../contexts/ImageContext";
 import * as ImagePicker from "expo-image-picker";
+import { uploadImageToCloudinary } from "../../services/cloudinaryService";
 
 interface EditUserModalProps {
   visible: boolean;
@@ -30,7 +31,7 @@ export default function EditUserModal({
   onClose,
 }: EditUserModalProps) {
   const updateUserMutation = useUpdateCurrentUser();
-  const { getUserImage } = useImages();
+  const { getUserImage, saveUserImage } = useImages();
   const [fullName, setFullName] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [cpf, setCpf] = useState("");
@@ -115,7 +116,10 @@ export default function EditUserModal({
     setSelectedImage(null);
   }, [visible, user]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    console.log("HANDLE SAVE EXECUTADO");
+    console.log("SELECTED IMAGE:", selectedImage);
+
     if (
       !fullName.trim() ||
       !dateOfBirth.trim() ||
@@ -143,6 +147,18 @@ export default function EditUserModal({
 
       return;
     }
+
+  try {
+    if (selectedImage) {
+      const imageUrl = await uploadImageToCloudinary(selectedImage);
+
+      await saveUserImage(user.id, imageUrl);
+    }
+  } catch (error: any) {
+    Alert.alert("Erro Cloudinary", error?.message ?? "Erro desconhecido ao enviar imagem.",); 
+
+    return;
+  }
 
     updateUserMutation.mutate(
       {
