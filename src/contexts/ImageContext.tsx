@@ -1,5 +1,6 @@
-import {createContext,ReactNode,useContext,} from "react";
+import {createContext,ReactNode,useContext,useEffect,useState,} from "react";
 import { ImageSourcePropType} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { PET_IMAGES, USER_IMAGES } from "../data/petImages";
 
 interface ImageContextType {
@@ -12,7 +13,13 @@ interface ImageContextType {
   getUserImage: (
     gender?: string,
     imageUrl?: string | null,
+    userId?: number | null,
   ) => ImageSourcePropType;
+
+  saveUserImage: (
+    userId: number,
+    imageUrl: string,
+  ) => Promise<void>;
 }
 
 interface ImageProviderProps {
@@ -24,6 +31,37 @@ const ImageContext = createContext<ImageContextType>( {} as ImageContextType,);
 export function ImageProvider({
   children,
 }: ImageProviderProps) {
+  const [userImages, setUserImages] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const loadUserImages = async () => {
+      const storedImages = await AsyncStorage.getItem("user-images");
+
+      if (storedImages) {
+        setUserImages(JSON.parse(storedImages));
+      }
+    };
+
+    loadUserImages();
+  }, []);
+
+  const saveUserImage = async (
+    userId: number,
+    imageUrl: string,
+  ) => {
+    const updatedImages = {
+      ...userImages,
+      [userId]: imageUrl,
+    };
+
+    setUserImages(updatedImages);
+
+    await AsyncStorage.setItem(
+      "user-images",
+      JSON.stringify(updatedImages),
+    );
+  };
+
   const getPetImage = (
     speciesId?: number | null,
     gender?: string,
@@ -68,10 +106,17 @@ export function ImageProvider({
   const getUserImage = (
     gender?: string,
     imageUrl?: string | null,
+    userId?: number | null,
   ): ImageSourcePropType => {
     if (imageUrl) {
       return {
         uri: imageUrl,
+      };
+    }
+
+    if (userId && userImages[userId]) {
+      return {
+        uri: userImages[userId],
       };
     }
 
@@ -93,6 +138,7 @@ export function ImageProvider({
       value={{
         getPetImage,
         getUserImage,
+        saveUserImage,
       }}
     >
       {children}
