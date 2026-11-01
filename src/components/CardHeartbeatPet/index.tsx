@@ -6,8 +6,19 @@ import BpmCircle from "../BpmCircle";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Entypo from "@expo/vector-icons/Entypo";
 import { CardHeartbeatPetType } from '../../types/CardHeartbeatPetType';
+import { useImages } from "../../contexts/ImageContext";
 
 export default function CardHeartbeatPet({ pet, onPress,}: CardHeartbeatPetType) {
+  const { getPetImage } = useImages();
+
+  const getSpeciesIdFromPet = () => {
+    if (typeof pet?.speciesId === "number") {
+      return pet.speciesId;
+    }
+
+    return null;
+  };
+
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -35,7 +46,12 @@ export default function CardHeartbeatPet({ pet, onPress,}: CardHeartbeatPetType)
           }}
         >
           <Image
-            source={require("../../assets/dogPaws.png")}
+            source={getPetImage(
+              pet.speciesId,
+              pet.sex,
+              undefined,
+              pet.id,
+            )}
             style={{
               width: 70,
               height: 70,
