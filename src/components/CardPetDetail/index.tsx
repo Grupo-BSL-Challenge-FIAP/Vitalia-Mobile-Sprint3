@@ -75,6 +75,8 @@ export default function CardPetDetail({
           source={getPetImage(
             pet.speciesId,
             pet.sex,
+            undefined,
+            pet.id,
           )}
           style={{
             width: 84,
