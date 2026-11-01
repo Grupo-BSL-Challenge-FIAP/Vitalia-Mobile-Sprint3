@@ -157,17 +157,7 @@ export function ImageProvider({
       };
     }
 
-    const normalizedGender =
-      gender?.trim().toLowerCase();
-
-    if (
-      normalizedGender === "feminino" ||
-      normalizedGender === "fêmea"
-    ) {
-      return USER_IMAGES.female;
-    }
-
-    return USER_IMAGES.male;
+    return USER_IMAGES.default;
   };
 
   return (
