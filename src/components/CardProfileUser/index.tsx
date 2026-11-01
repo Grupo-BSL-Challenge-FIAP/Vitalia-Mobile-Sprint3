@@ -94,7 +94,7 @@ export default function CardProfileUser() {
       >
         <View>
           <Image
-            source={getUserImage()}
+            source={getUserImage(undefined, undefined, user.id)}
             style={{
               width: 80,
               height: 80,
