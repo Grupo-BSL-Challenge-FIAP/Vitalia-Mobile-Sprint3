@@ -41,7 +41,7 @@ export default function HeaderDashboardResponsible() {
         }}
       >
         <Image
-          source={getUserImage()}
+          source={getUserImage(undefined, undefined, user?.id)}
           style={{
             width: 50,
             height: 50,
